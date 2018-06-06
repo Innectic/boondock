@@ -205,7 +205,6 @@ impl Docker {
 
     fn execute_request(&self, request: RequestBuilder) -> Result<String> {
         let mut response = try!(request.send());
-        assert!(response.status.is_success());
 
         let mut body = String::new();
         try!(response.read_to_string(&mut body));
@@ -339,6 +338,75 @@ impl Docker {
         let url = format!("/containers/{}/json", container.Id);
         self.decode_url("ContainerInfo", &url)
             .chain_err(|| ErrorKind::ContainerInfo(container.Id.clone()))
+    }
+
+    pub fn start_container(&self, container: String, opts: Option<ContainerStartOptions>) -> Result<String> {
+        let mut options = String::new();
+        if let Some(opts) = opts {
+            options = opts.to_url_params();
+        }
+        
+        let url = format!("/containers/{}/start?{}", &container, &options);
+        let url = self.get_url(&url);
+
+        let request = self.build_post_request(&url);
+        self.execute_request(request)
+            .chain_err(|| ErrorKind::ContainerInfo(container.clone()))  // TODO: Give this it's own error
+    }
+
+    pub fn stop_container(&self, container: String, opts: Option<ContainerStatusOptions>) -> Result<String> {
+        let mut options = String::new();
+        if let Some(opts) = opts {
+            options = opts.to_url_params();
+        }
+
+        let url = format!("/containers/{}/stop?{}", &container, &options);
+        let url = self.get_url(&url);
+
+        let request = self.build_post_request(&url);
+        self.execute_request(request)
+            .chain_err(|| ErrorKind::ContainerInfo(container.clone()))  // TODO: Give this it's own error
+    }
+
+    pub fn restart_container(&self, container: String, opts: Option<ContainerStatusOptions>) -> Result<String> {
+        let mut options = String::new();
+        if let Some(opts) = opts {
+            options = opts.to_url_params();
+        }
+        let url = format!("/containers/{}/restart?{}", &container, &options);
+        let url = self.get_url(&url);
+
+        let request = self.build_post_request(&url);
+        self.execute_request(request)
+            .chain_err(|| ErrorKind::ContainerInfo(container.clone()))  // TODO: Give this it's own error
+    }
+
+    pub fn rename_container(&self, container: String, new_name: String) -> Result<String> {
+        let options = format!("name={}", new_name);
+        let url = format!("/containers/{}/rename?{}", &container, &options);
+        let url = self.get_url(&url);
+
+        let request = self.build_post_request(&url);
+        self.execute_request(request)
+            .chain_err(|| ErrorKind::ContainerInfo(container.clone()))  // TODO: Give this it's own error    
+    }
+
+    pub fn pause_container(&self, container: String) -> Result<String> {
+        let url = format!("/containers/{}/pause", &container);
+        let url = self.get_url(&url);
+
+        let request = self.build_post_request(&url);
+        self.execute_request(request)
+            .chain_err(|| ErrorKind::ContainerInfo(container.clone()))  // TODO: Give this it's own error    
+    }
+    
+    pub fn unpause_container(&self, container: String) -> Result<String> {
+        let url = format!("/containers/{}/unpause", &container);
+        let url = self.get_url(&url);
+
+        let request = self.build_post_request(&url);
+        self.execute_request(request)
+            .chain_err(|| ErrorKind::ContainerInfo(container.clone()))  // TODO: Give this it's own error    
     }
 
     pub fn filesystem_changes(&self, container: &Container) -> Result<Vec<FilesystemChange>> {

@@ -60,3 +60,72 @@ impl ContainerListOptions {
         params.finish()
     }
 }
+
+/// These options can be used for stopping or restarting a container.
+pub struct ContainerStatusOptions {
+    /// time until the status changes
+    time: Option<u16>
+}
+
+impl ContainerStatusOptions {
+
+    /// The time to wait before changing the status
+    pub fn time(mut self, time: u16) -> Self {
+        self.time = Some(time);
+        self
+    }
+
+    pub fn to_url_params(&self) -> String {
+        let mut params = form_urlencoded::Serializer::new(String::new());
+
+        if let Some(time) = self.time {
+            params.append_pair("t", &time.to_string());
+        }
+        params.finish()
+    }
+}
+
+pub struct ContainerStartOptions {
+    /// Custom key for deattaching from the container
+    detach_keys: Option<String>
+}
+
+impl ContainerStartOptions {
+
+    pub fn detach_keys(mut self, keys: String) -> Self {
+        self.detach_keys = Some(keys);
+        self
+    }
+
+    pub fn to_url_params(&self) -> String {
+        let mut params = form_urlencoded::Serializer::new(String::new());
+
+        if let &Some(ref keys) = &self.detach_keys {
+            params.append_pair("detachKeys", &keys);
+        }
+        params.finish()
+    }
+}
+
+pub struct ContainerKillOptions {
+    /// What kind of POSIX signal to send to the container
+    signal: Option<String>
+}
+
+impl ContainerKillOptions {
+
+    /// the signal to send to the container
+    pub fn signal(mut self, signal: String) -> Self {
+        self.signal = Some(signal);
+        self
+    }
+
+    pub fn to_url_params(&self) -> String {
+        let mut params = form_urlencoded::Serializer::new(String::new());
+
+        if let &Some(ref signal) = &self.signal {
+            params.append_pair("signal", &signal);
+        }
+        params.finish()
+    }
+}
