@@ -20,6 +20,9 @@ extern crate serde_json;
 extern crate serde;
 extern crate url;
 
+#[cfg(feature = "use-ws")]
+extern crate ws;
+
 // declare modules
 mod test;
 mod util;

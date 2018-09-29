@@ -10,15 +10,15 @@ fn null_to_default<'de, D, T>(de: D) -> Result<T, D::Error>
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[allow(non_snake_case)]
+#[serde(rename_all = "PascalCase")]
 pub struct Image {
-    pub Created: u64,
-    pub Id: String,
-    pub ParentId: String,
+    pub created: u64,
+    pub id: String,
+    pub parent_id: String,
     #[serde(deserialize_with = "null_to_default")]
-    pub RepoTags: Vec<String>,
-    pub Size: u64,
-    pub VirtualSize: u64
+    pub repo_tags: Vec<String>,
+    pub size: u64,
+    pub virtual_size: u64
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -241,18 +241,18 @@ impl Docker {
     }
 
     pub fn processes(&self, container: &Container) -> Result<Vec<Process>> {
-        let url = format!("/containers/{}/top", container.Id);
+        let url = format!("/containers/{}/top", container.id);
         let top: Top = try!(self.decode_url("Top", &url));
 
         let mut processes: Vec<Process> = Vec::new();
-        let mut process_iter = top.Processes.iter();
+        let mut process_iter = top.processes.iter();
         loop {
             let process = match process_iter.next() {
                 Some(process) => process,
                 None => { break; }
             };
 
-            let mut p = Process{
+            let mut p = Process {
                 user: String::new(),
                 pid: String::new(),
                 cpu: None,
@@ -273,7 +273,7 @@ impl Docker {
                     Some(value) => value,
                     None => { break; }
                 };
-                let key = &top.Titles[i];
+                let key = &top.titles[i];
                 match key.as_ref() {
                     "UID" => { p.user = value.clone() },
                     "USER" => {p.user = value.clone() },
@@ -301,11 +301,11 @@ impl Docker {
     }
 
     pub fn stats(&self, container: &Container) -> Result<StatsReader> {
-        if container.Status.contains("Up") == false {
-            return Err("The container is already stopped.".into());
+        if !container.status.contains("Up") {
+            return Err("The container is stopped.".into());
         }
 
-        let request_url = self.get_url(&format!("/containers/{}/stats", container.Id));
+        let request_url = self.get_url(&format!("/containers/{}/stats", container.id));
         let request = self.build_get_request(&request_url);
         let response = try!(self.start_request(request));
         Ok(StatsReader::new(response))
@@ -335,9 +335,9 @@ impl Docker {
     }
 
     pub fn container_info(&self, container: &Container) -> Result<ContainerInfo> {
-        let url = format!("/containers/{}/json", container.Id);
+        let url = format!("/containers/{}/json", container.id);
         self.decode_url("ContainerInfo", &url)
-            .chain_err(|| ErrorKind::ContainerInfo(container.Id.clone()))
+            .chain_err(|| ErrorKind::ContainerInfo(container.id.clone()))
     }
 
     pub fn start_container(&self, container: String, opts: Option<ContainerStartOptions>) -> Result<String> {
@@ -410,12 +410,12 @@ impl Docker {
     }
 
     pub fn filesystem_changes(&self, container: &Container) -> Result<Vec<FilesystemChange>> {
-        let url = format!("/containers/{}/changes", container.Id);
+        let url = format!("/containers/{}/changes", container.id);
         self.decode_url("FilesystemChange", &url)
     }
 
     pub fn export_container(&self, container: &Container) -> Result<Response> {
-        let url = format!("/containers/{}/export", container.Id);
+        let url = format!("/containers/{}/export", container.id);
         let request_url = self.get_url(&url);
         let request = self.build_get_request(&request_url);
         let response = try!(self.start_request(request));
