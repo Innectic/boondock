@@ -2,6 +2,8 @@
 
 use url::form_urlencoded;
 
+use std::collections::HashMap;
+
 /// Options for `Docker::containers`.  This uses a "builder" pattern, so
 /// most methods will consume the object and return a new one.
 #[derive(Debug, Clone, Default)]
@@ -127,5 +129,115 @@ impl ContainerKillOptions {
             params.append_pair("signal", &signal);
         }
         params.finish()
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct ContainerCreateOptions {
+    pub hostname: Option<String>,
+    pub domain_name: Option<String>,
+    pub user: Option<String>,
+    pub attach_stdin: Option<bool>,
+    pub attach_stdout: Option<bool>,
+    pub attach_stderr: Option<bool>,
+    pub tty: Option<bool>,
+    pub open_stdin: Option<bool>,
+    pub stdin_once: Option<bool>,
+    pub env: Option<Vec<String>>,
+    pub cmd: Option<Vec<String>>,
+    pub entrypoint: Option<String>,
+    pub image: Option<String>,
+    pub labels: Option<HashMap<String, String>>,
+}
+
+impl ContainerCreateOptions {
+
+    pub fn default() -> Self {
+        ContainerCreateOptions {
+            hostname: None,
+            domain_name: None,
+            user: None,
+            attach_stdin: None,
+            attach_stdout: None,
+            attach_stderr: None,
+            tty: None,
+            open_stdin: None,
+            stdin_once: None,
+            env: None,
+            cmd: None,
+            entrypoint: None,
+            image: None,
+            labels: None
+        }
+    }
+
+    fn hostname(mut self, hostname: &str) -> Self {
+        self.hostname = Some(hostname.to_string());
+        self
+    }
+
+    fn domain_name(mut self, domain_name: &str) -> Self {
+        self.domain_name = Some(domain_name.to_string());
+        self
+    }
+
+    fn user(mut self, user: &str) -> Self {
+        self.user = Some(user.to_string());
+        self
+    }
+
+    fn attach_stdin(mut self, attach_stdin: bool) -> Self {
+        self.attach_stdin = Some(attach_stdin);
+        self
+    }
+
+    fn attach_stdout(mut self, attach_stdout: bool) -> Self {
+        self.attach_stdout = Some(attach_stdout);
+        self
+    }
+
+    fn attach_stderr(mut self, attach_stderr: bool) -> Self {
+        self.attach_stderr = Some(attach_stderr);
+        self
+    }
+
+    fn tty(mut self, tty: bool) -> Self {
+        self.tty = Some(tty);
+        self
+    }
+
+    fn open_stdin(mut self, open_stdin: bool) -> Self {
+        self.open_stdin = Some(open_stdin);
+        self
+    }
+
+    fn stdin_once(mut self, stdin_once: bool) -> Self {
+        self.stdin_once = Some(stdin_once);
+        self
+    }
+
+    fn env(mut self, env: Vec<String>) -> Self {
+        self.env = Some(env);
+        self
+    }
+
+    fn cmd(mut self, cmd: Vec<String>) -> Self {
+        self.cmd = Some(cmd);
+        self
+    }
+
+    fn entrypoint(mut self, entrypoint: &str) -> Self {
+        self.entrypoint = Some(entrypoint.to_string());
+        self
+    }
+
+    fn image(mut self, image: &str) -> Self {
+        self.image = Some(image.to_string());
+        self
+    }
+
+    fn labels(mut self, labels: HashMap<String, String>) -> Self {
+        self.labels = Some(labels);
+        self
     }
 }

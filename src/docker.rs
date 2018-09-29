@@ -334,6 +334,10 @@ impl Docker {
         self.decode_url("SystemInfo", &format!("/info"))
     }
 
+    pub fn create_container(&self, options: Option<ContainerCreateOptions>) -> Result<String> {
+        Ok("".to_string())
+    }
+
     pub fn container_info(&self, container: &Container) -> Result<ContainerInfo> {
         let url = format!("/containers/{}/json", container.id);
         self.decode_url("ContainerInfo", &url)
